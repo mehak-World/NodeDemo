@@ -1,0 +1,61 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_NAME = 'yourdockerhubusername/simple-node-app'
+    DOCKER_CREDENTIALS = credentials('dockerhub-creds') // Jenkins creds
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git 'https://github.com/yourusername/simple-node-app.git'
+      }
+    }
+
+    stage('Install & Test') {
+      steps {
+        sh 'npm install'
+        // Add tests here if you have any
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh "docker build -t $IMAGE_NAME ."
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        withDockerRegistry([credentialsId: 'dockerhub-creds', url: '']) {
+          sh "docker push $IMAGE_NAME"
+        }
+      }
+    }
+
+    stage('Provision EC2') {
+      steps {
+        dir('terraform') {
+          sh '''
+            terraform init
+            terraform apply -auto-approve
+          '''
+        }
+      }
+    }
+
+    stage('Deploy to EC2') {
+      steps {
+        sshagent(['ec2-key']) {
+          sh '''
+            ssh -o StrictHostKeyChecking=no ec2-user@<EC2_PUBLIC_IP> "
+              docker pull $IMAGE_NAME &&
+              docker run -d -p 80:3000 $IMAGE_NAME
+            "
+          '''
+        }
+      }
+    }
+  }
+}
