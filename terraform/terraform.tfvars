@@ -1,5 +1,5 @@
-aws_region        = "us-west-2"
-ami_id            = "ami-0c55b159cbfafe1f0" 
+aws_region        = "ca-central-1"
+ami_id            = "ami-082b835e9abf75c61" 
 instance_type     = "t2.micro"
 key_name          = "mykey"
 private_key_path  = "/home/ubuntu/mykey_1.pem"
