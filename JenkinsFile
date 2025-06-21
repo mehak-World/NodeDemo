@@ -2,14 +2,14 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME = 'yourdockerhubusername/simple-node-app'
-    DOCKER_CREDENTIALS = credentials('dockerhub-creds') // Jenkins creds
+    IMAGE_NAME = 'mehaknarang0609/simple-node-app'
+    DOCKER_CREDENTIALS = credentials('dockerhub-creds')
   }
 
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/yourusername/simple-node-app.git'
+        git 'https://github.com/mehak-World/NodeDemo.git'
       }
     }
 
